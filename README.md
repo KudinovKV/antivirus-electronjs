@@ -20,6 +20,10 @@
 
 > node updateclient.js
 
+13. Start app like :
+
+> 'npm run start' or 'runner.bat'
+
 # ToChange
 
 1. In *cloud_systeml.html* change path, ip , port to your *'Cuckoo scanner'*. 
