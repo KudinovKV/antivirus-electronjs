@@ -74,7 +74,6 @@
 		<!-- Menu Toggle Script -->
 		<script>
 		window.$ = window.jQuery = require('jquery');
-		let {PythonShell} = require('python-shell');
 		const logs = require('modules/../../log.js');
 		const initpage = require('modules/../../initpage.js');
 
@@ -176,37 +175,6 @@
 				}
 				EndOfWork = true;
             });
-			/*PythonShell.run('C:\\UnterAV\\Cloud\\cuckoo_start_scan.py' , options ,  function  (err, results)  {
-				if  (err)
-					throw err;
-				console.log('results', results);
-				if (results == 'Error')
-				{
-					var eventtext = "Сканирование завершено. При выполнении возникли ошибки";
-					var notification = new Notification('UnterAV' , {body:eventtext});
-					logs.LogWrite(eventtext);
-					logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + eventtext);
-				}
-				else if (results[1] == 'Clear'){
-					var eventtext = `Проверка показала, что файл безопасен, рейтинг : ${results[0]} ! `;
-					var notification = new Notification('UnterAV' , {body: eventtext});
-					logs.LogWrite(eventtext);
-					logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + eventtext);
-				}
-				else if (results[1] == 'Malware'){
-					var eventtext = `Проверка показала, что файл выполняет подозрительную активность, рейтинг : ${results[0]} ! `;
-					var notification = new Notification('UnterAV' , {body:eventtext});
-					logs.LogWrite(eventtext);
-					logs.LogWriteDb('CLOUDSYSTEM' , '[' + FileNameG + ']' + eventtext);
-				}
-				else{
-					var eventtext = "Сканирование завершено. При выполнении возникли ошибки";
-					var notification = new Notification('UnterAV' , {body:eventtext});
-					logs.LogWrite(eventtext);
-					logs.LogWriteDb('CLOUDSYSTEM' , '[' + FileNameG + ']' + eventtext);
-				}
-				EndOfWork = true;			
-			});*/
 		});
 
 		</script>
