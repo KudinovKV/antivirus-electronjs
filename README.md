@@ -34,4 +34,8 @@
 
 # Result
 
+<<<<<<< HEAD
 ![Start page](example.png)
+=======
+![Start page](example.png)
+>>>>>>> 264ac81d3417c836eb2a18dd77bca67057a16c8f
