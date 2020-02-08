@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Network protection</title>
+		<!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+		<!-- meta http-equiv="Content-Security-Policy" content="script-src 'self';" /-->
+		<link rel="stylesheet" href="css/index.css">
+		<link rel="stylesheet" href="css/bg.css">
+		<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+		<script>
+			window.$ = window.jQuery = require('jquery');
+			require('popper.js');
+			require('bootstrap');
+		</script>
+		<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/css/bootstrap4-toggle.min.css" rel="stylesheet">  
+		<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/js/bootstrap4-toggle.min.js"></script>	
+	</head>
+	<body class="bg-dark">
+		<div class="d-flex" id="wrapper">
+			<!-- Sidebar -->
+			<div class="border-right border-secondary" id="sidebar-wrapper">
+				<div class="sidebar-heading"><a href="index.html" class="list-group-item list-group-item-action">UnterAV</a></div>
+				<div class="list-group list-group-flush mr-1">
+					<a href="file_filter_system.html" class="list-group-item list-group-item-action linkshadow">Подсистема файловой фильтрации</a>
+					<a href="reg_filter_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема реестровой фильтрации</a>
+					<a href="static_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема статического анализа</a>
+					<a href="dynamic_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+						динамического анализа</a>
+					<a href="network_protection.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема сетевой защиты </a>
+					<a href="cloud_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистемы обновления и облачного сканирования</a>
+				</div>
+			</div>
+			<!-- /#sidebar-wrapper -->
+
+			<!-- Page Content -->
+			<div  class="container justify-content-center" style="width: 100%;">
+				<div class="row">
+					<nav class="navbar navbar-expand-lg navbar-dark  bg-dark">
+						<button class="button button-effect" id="menu-toggle">Опции</button>
+					</nav>
+				</div>
+				<div class="m-2 p-2" style="background-color: darkgrey; border-radius:10px !important;">
+					<div class="row bg-secondary justify-content-md-center m-2 p-2" style="border-radius:10px !important;">
+						<!-- Формы ввода -->
+						<div class="col-xs-5 m-1 p-1">
+							<input id="CheckboxToggle" type="checkbox" data-style="slow" data-toggle="toggle">
+						</div>
+						<div class="col-xs-5 m-1 p-1 ">
+							<label class="control-label align-middle">Сетевая защита</label>
+						</div>
+					</div>
+					<div class="bg-secondary m-2 p-2" style="border-radius:10px !important;">
+						<div class="row justify-content-md-center">
+							<label>Установленные правила : </label>
+						</div>
+						<div class="row justify-content-md-center m-1 p-1">
+							<textarea style="resize: none;" class="form-control" id="ListOfRules" rows="4" readonly></textarea>
+						</div>
+					</div>
+					<div class="m-2 p-2 bg-secondary" style="border-radius:10px !important;">
+						<!-- Действие -->
+						<div class="row">
+							<label>Создайте правило : </label>
+							<select class="custom-select m-2 p-2" id="Action">
+								<option value="Wait" selected>Выберите действие...</option>
+								<option value="block">Блокировать</option>
+								<option value="allow">Разрешить</option>
+							</select>	
+						</div>
+						<!-- Протокол -->
+						<div class="row">
+							<div class="col-6">
+								<select class="custom-select m-2 p-2" id="Protocol">
+									<option value="Wait" selected>Выберите протокол...</option value="Wait">
+									<option value="icmp">ICMP</option>
+									<option value="tcp">TCP</option>
+									<option value="udp">UDP</option>
+									<option value="Another">Другой</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<input type="text" id="AnotherProtocol" class="m-2 p-2 form-control" placeholder="Другой протокол" disabled>
+							</div>	
+						</div>
+						<!-- IP источника -->
+						<div class="row">
+							<div class="col-6">
+								<select class="custom-select m-2 p-2" id="IPSource">
+									<option value="Wait" selected>Выберите IP адрес источника...</option value="Wait">
+									<option value="192.168.0.1">192.168.0.1</option>
+									<option value="127.0.0.1">127.0.0.1</option>
+									<option value="any">Любой</option>
+									<option value="Another">Другой</option>
+								</select>	
+							</div>
+							<div class="col-6">
+								<input type="text" id="AnotherSourceIP" class="m-2 p-2 form-control" disabled placeholder="Другой IP адрес источника">
+							</div>
+						</div>
+						<!-- Порт источника -->
+						<div class="row">
+							<div class="col-6">
+								<select class="custom-select m-2 p-2" id="PortSource">
+									<option  value="Wait" selected>Выберите порт источника...</option>
+									<option value="80">80</option>
+									<option value="53">53</option>
+									<option value="any">Любой</option>
+									<option value="Another">Другой</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<input type="text" id="AnotherSourcePort" class="m-2 p-2 form-control" disabled placeholder="Другой порт источника">
+							</div>
+						</div>
+						<!-- IP назначения -->
+						<div class="row">
+							<div class="col-6">
+								<select class="custom-select m-2 p-2" id="IPDest">
+									<option  value="Wait" selected>Выберите IP адрес назначения...</option>
+									<option value="192.168.0.1">192.168.0.1</option>
+									<option value="127.0.0.1">127.0.0.1</option>
+									<option value="8.8.8.8">8.8.8.8</option>
+									<option value="any">Любой</option>
+									<option value="Another">Другой</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<input type="text" id="AnotherDestIP" class="m-2 p-2 form-control" disabled placeholder="Другой IP адрес назначения">
+							</div>
+						</div>
+						<!-- Порт назначения -->
+						<div class="row">
+							<div class="col-6">
+								<select class="custom-select m-2 p-2" id="PortDest">
+									<option value="Wait" selected>Выберите порт назначения...</option>
+									<option value="80">80</option>
+									<option value="53">53</option>
+									<option value="any">Любой</option>
+									<option value="Another">Другой</option>
+								</select>
+							</div>
+							<div class="col-6">
+								<input type="text" id="AnotherDestPort" class="m-2 p-2 form-control" disabled placeholder="Другой порт назначения">
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col m-1 p-1" style="widows: 95% !important;" >
+								<input type="text" id="Signature" class="m-2 p-2 form-control" placeholder="Сигнатура" pattern="^[a-zA-Z0-9]+$">
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<button type="submit" id="AddRules" class="button button-effect">Добавить для защиты</button>
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<button type="submit" id="ClearAll" class="button button-effect">Очистить весь список</button>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+			<!-- /#page-content-wrapper -->
+
+		</div>
+		<!-- /#wrapper -->
+		<!-- Menu Toggle Script -->
+		<script>
+			const func_notify = require('modules/../../notification.js');
+			const func_pipe = require('modules/../../namedpipe.js');
+			const func_reg = require('modules/../../regestry.js');
+			const initpage = require('modules/../../initpage.js');
+
+			const buttonAdd = document.querySelector("#AddRules");
+			const buttonClear = document.querySelector("#ClearAll");
+			const textListOfRules = document.querySelector("#ListOfRules");
+			const Signature = document.querySelector("#Signature");
+
+			// Инициализация
+			async function Init(){
+				var ListOfKeys = await func_reg.Read('rules');
+				console.log('ReadReg : ' , ListOfKeys);
+				var arrayOfStrings = ListOfKeys.split('|');
+				for (var Keys in arrayOfStrings)
+				{
+					if (arrayOfStrings[Keys])
+						textListOfRules.value += arrayOfStrings[Keys] + '\n'
+				}
+				var resdata = await initpage.ReadSettings('NetFilter');
+				if (resdata == 'On')
+				{
+					$('#CheckboxToggle').bootstrapToggle('on');
+					console.log('WTF' , document.querySelector('#CheckboxToggle').checked);
+				}
+			}
+			Init()
+
+			$("#menu-toggle").click(function(e) {
+				e.preventDefault();
+				$("#wrapper").toggleClass("toggled");
+			});
+
+			// Protocol
+			const Protocol = document.getElementById("Protocol");		
+			Protocol.addEventListener("change", function() {
+				if (Protocol.value == 'Another')
+				{
+					document.getElementById("AnotherProtocol").disabled = false;
+					document.getElementById("AnotherProtocol").value = '';
+				}
+				else
+				{
+					document.getElementById("AnotherProtocol").disabled = true;
+					document.getElementById("AnotherProtocol").value = 'Другой протокол';
+				}	
+			});
+			// IPSource
+			const IPSource = document.getElementById("IPSource");		
+			IPSource.addEventListener("change", function() {
+				if (IPSource.value == 'Another')
+				{
+					document.getElementById("AnotherSourceIP").disabled = false;
+					document.getElementById("AnotherSourceIP").value = '';
+				}	
+				else
+				{
+					document.getElementById("AnotherSourceIP").disabled = true;
+					document.getElementById("AnotherSourceIP").value = 'Другой IP адрес источника';
+				}	
+			});
+			// PortSource
+			const PortSource = document.getElementById("PortSource");		
+			PortSource.addEventListener("change", function() {
+				if (PortSource.value == 'Another')
+				{
+					document.getElementById("AnotherSourcePort").disabled = false;
+					document.getElementById("AnotherSourcePort").value = '';
+				}	
+				else
+				{
+					document.getElementById("AnotherSourcePort").disabled = true;
+					document.getElementById("AnotherSourcePort").value = 'Другой порт источника';
+				}	
+			});
+			// IPDest
+			const IPDest = document.getElementById("IPDest");		
+			IPDest.addEventListener("change", function() {
+				if (IPDest.value == 'Another')
+				{
+					document.getElementById("AnotherDestIP").disabled = false;
+					document.getElementById("AnotherDestIP").value = '';
+				}	
+				else
+				{
+					document.getElementById("AnotherDestIP").disabled = true;
+					document.getElementById("AnotherDestIP").value = 'Другой IP адрес назначения';
+				}	
+			});
+			// PortDest
+			const PortDest = document.getElementById("PortDest");		
+			PortDest.addEventListener("change", function() {
+				if (PortDest.value == 'Another')
+				{
+					document.getElementById("AnotherDestPort").disabled = false;
+					document.getElementById("AnotherDestPort").value = '';
+				}
+				else
+				{
+					document.getElementById("AnotherDestPort").disabled = true;
+					document.getElementById("AnotherDestPort").value = 'Другой порт назначения';
+				}
+			});
+
+			function GetValueFromUserForm(ElementName , AnotherElementName){
+				var selector = document.getElementById(ElementName);
+				var value = selector[selector.selectedIndex].value;
+				if (value == 'Another')
+				{
+					selector = document.getElementById(AnotherElementName);
+					value = selector.value;
+				}
+				return value
+			}
+
+			buttonAdd.addEventListener("click", function() {
+				// 1. Действие
+				var selector1 = document.getElementById('Action');
+				var value1 = selector1[selector1.selectedIndex].value;
+				console.log('NewAction' , value1);
+				// 2. Протокол
+				var value2 = GetValueFromUserForm('Protocol' , 'AnotherProtocol')
+				console.log('NewProtocol' , value2);
+				// 3. IP Source
+				var value3 = GetValueFromUserForm('IPSource' , 'AnotherSourceIP')
+				console.log('NewIPSource' , value3);
+				// 4. Port Source
+				var value4 = GetValueFromUserForm('PortSource' , 'AnotherSourcePort')
+				console.log('NewPortSource' , value4);
+				// 5. IP Dest
+				var value5 = GetValueFromUserForm('IPDest' , 'AnotherDestIP')
+				console.log('NewIPDest' , value5);
+				// 6. Port Dest
+				var value6 = GetValueFromUserForm('PortDest' , 'AnotherDestPort')
+				console.log('NewPortDest' , value6);
+				// 7. Signature
+				var signature_value = Signature.value;
+
+				// Concat
+				if (value1 == 'Wait' || value2 == 'Wait' || value3 == 'Wait' || value4 == 'Wait' || value5 == 'Wait' || value6 == 'Wait')
+				{
+					var notification = new Notification('UnterAV' , {body:"Указаны неправильнные данные !"});
+				}
+				else{
+					let new_value =  value1 + ' ' + value2 + ' ' + value3 + ' ' + value4 + ' -> ' + value5 + ' ' + value6 ;
+					textListOfRules.value += new_value + '\n';
+					var notification = new Notification('UnterAV' , {body:"Значение добавлено !"});
+					// TODO: Передать через PIPE
+					var res = textListOfRules.value.replace(/\n/g, '|');
+					res = res.replace(/(\s+)?.$/, '');
+					func_reg.Write(res,'rules');
+					func_pipe.Send("net.update");
+				}
+				
+			});
+			
+			buttonClear.addEventListener("click", function() {
+				console.log("Clear list");
+				textListOfRules.value = '';
+				var notification = new Notification('UnterAV' , {body:"Список очищен !"});
+				// TODO: Передать через PIPE
+				func_reg.Write('', 'rules');
+				func_pipe.Send("net.update"); 
+			});
+			
+			$('#CheckboxToggle').change(function () {
+				if ( $(this).is(':checked') ) {
+					func_pipe.Send("net.on");
+					var notification = new Notification('UnterAV' , {body:"Подсистема включена !"});
+					initpage.WriteSettings('NetFilter' , 'On');
+				} else {
+					func_pipe.Send("net.off");
+					var notification = new Notification('UnterAV' , {body:"Подсистема выключена !"});
+					initpage.WriteSettings('NetFilter' , 'Off');
+				}
+			});
+		</script>
+	</body>
+</html>

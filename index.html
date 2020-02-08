@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Main</title>
+		<!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+		<!-- meta http-equiv="Content-Security-Policy" content="script-src 'self';" /-->
+		<link rel="stylesheet" href="css/index.css">
+		<link rel="stylesheet" href="css/bg.css">
+		<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	</head>
+	<body class="bg-dark">
+		<div class="d-flex" id="wrapper">
+			<!-- Sidebar -->
+			<div class="border-right border-secondary" id="sidebar-wrapper">
+				<div class="sidebar-heading"><a href="index.html" class="list-group-item list-group-item-action">UnterAV</a></div>
+				<div class="list-group list-group-flush mr-1">
+					<a href="file_filter_system.html" class="list-group-item list-group-item-action linkshadow">Подсистема файловой фильтрации</a>
+					<a href="reg_filter_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема реестровой фильтрации</a>
+					<a href="static_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема статического анализа</a>
+					<a href="dynamic_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+						динамического анализа</a>
+					<a href="network_protection.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема сетевой защиты </a>
+					<a href="cloud_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистемы обновления и облачного сканирования</a>
+				</div>
+			</div>
+			<!-- /#sidebar-wrapper -->
+
+			<!-- Page Content -->
+			<div class="m-2" style="width: 100%;">
+				<nav class="navbar navbar-expand-lg navbar-dark  bg-dark">
+					<button class="button button-effect" id="menu-toggle">Опции</button>
+				</nav>
+				<div class="text-center bg-light rounded ">
+					<div class="row">
+						<div class="col p-1 ">
+							<h5>Главная</h5>
+						</div>
+					</div>
+					<div class="row bg-light">
+						<div class="col  border-top p-1">
+							<blockquote class="blockquote mb-0">
+								<p>Неудача - это просто возможность начать снова, но уже более мудро.</p>
+								<footer class="blockquote-footer">Генри Форд</footer>
+							</blockquote>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /#page-content-wrapper -->
+
+		</div>
+		<!-- /#wrapper -->
+		<!-- Menu Toggle Script -->
+		<script>
+			window.$ = window.jQuery = require('jquery');
+
+			$("#menu-toggle").click(function(e){
+				e.preventDefault();
+				$("#wrapper").toggleClass("toggled");
+			});
+		</script>
+	</body>
+</html>

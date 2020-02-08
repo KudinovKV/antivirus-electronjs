@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Filter System</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/bg.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<script>window.$ = window.jQuery = require('jquery');</script>
+	<script>require('popper.js');</script>
+	<script>require('bootstrap');</script>
+	<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/css/bootstrap4-toggle.min.css" rel="stylesheet">  
+	<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/js/bootstrap4-toggle.min.js"></script>	
+  </head>
+  <body class="bg-dark">
+    <div class="d-flex" id="wrapper">
+			<!-- Sidebar -->
+			<div class="border-right border-secondary" id="sidebar-wrapper">
+				<div class="sidebar-heading"><a href="index.html" class="list-group-item list-group-item-action">UnterAV</a></div>
+				<div class="list-group list-group-flush mr-1">
+					<a href="file_filter_system.html" class="list-group-item list-group-item-action linkshadow">Подсистема файловой фильтрации</a>
+					<a href="reg_filter_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема реестровой фильтрации</a>
+					<a href="static_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема статического анализа</a>
+					<a href="dynamic_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+						динамического анализа</a>
+					<a href="network_protection.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема сетевой защиты </a>
+					<a href="cloud_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистемы обновления и облачного сканирования</a>
+				</div>
+			</div>
+			<!-- /#sidebar-wrapper -->
+
+			<!-- Page Content -->
+			<div class="container justify-content-center" style="width: 100%;">
+				<div class="row">
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+						<button class="button button-effect" id="menu-toggle">Опции</button>
+					</nav>
+				</div>
+				<div class="m-2 p-2" style="background-color: darkgrey; border-radius:10px !important;">
+					<div class="row bg-secondary justify-content-md-center m-2 p-2" style="border-radius:10px !important;">
+						<!-- Формы ввода -->
+						<div class="col-xs-5 m-1 p-1">
+							<input id="CheckboxToggle" type="checkbox"  data-style="slow" data-toggle="toggle">
+						</div>
+						<div class="col-xs-5 m-1 p-1 ">
+							<label class="control-label align-middle">Защита ключей реестра</label>
+						</div>
+					</div>
+					<div class="bg-secondary m-2 p-2" style="border-radius:10px !important;">
+						<div class="row justify-content-md-center">
+							<label>Защищаемые ключи реестра: </label>
+						</div>
+						<div class="row justify-content-md-center m-1 p-1">
+							<textarea style="resize: none;" class="form-control" id="ListOfKeys" rows="4" readonly></textarea>
+						</div>
+					</div>
+					<div class="bg-secondary m-2 p-2" style="border-radius:10px !important;">
+						<div class="row justify-content-md-center">
+							<div class="col m-1 p-1" style="widows: 95% !important;">
+								<input type="text" id="NewRegKey" class="form-control" placeholder="HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run">
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<button type="submit" id="AddRegKey" class="button button-effect">Добавить для защиты</button>
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<button type="submit" id="ClearAll" class="button button-effect">Очистить весь список</button>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+			<!-- /#page-content-wrapper -->
+	</div>
+    <script>
+		// Инициализация
+		const func_notify = require('modules/../../notification.js');
+		const func_pipe = require('modules/../../namedpipe.js');
+		const func_reg = require('modules/../../regestry.js');
+		const initpage = require('modules/../../initpage.js');
+
+		let buttonAdd = document.querySelector("#AddRegKey");
+		let buttonClear = document.querySelector("#ClearAll");
+		let textarea = document.querySelector("#ListOfKeys");
+		let textNewRegKey = document.getElementById("NewRegKey");
+		let RegKeyPathG = ""; 
+
+		// Инициализация
+		async function Init(){ 
+			var ListOfKeys = await func_reg.Read('Protectedregistry');
+			console.log('ReadReg : ' , ListOfKeys);
+			var arrayOfStrings = ListOfKeys.split('|');
+			for (var Keys in arrayOfStrings)
+			{
+				if(arrayOfStrings[Keys])
+					textarea.value += arrayOfStrings[Keys] + '\n'
+			}
+			var resdata = await initpage.ReadSettings('RegFilter');
+			if (resdata == 'On')
+			{
+				$('#CheckboxToggle').bootstrapToggle('on');
+				console.log('WTF' , document.querySelector('#CheckboxToggle').checked);
+			}
+		}
+		Init()
+
+		// Опции 
+		$("#menu-toggle").click(function(e) {
+			e.preventDefault();
+			$("#wrapper").toggleClass("toggled");
+		});
+		// Обработка нажатия кнопок
+		buttonAdd.addEventListener("click", function() {
+			RegKeyPathG = textNewRegKey.value; //$(this).val();
+			console.log(RegKeyPathG);
+			func_notify.isNull(RegKeyPathG);
+			textarea.value += RegKeyPathG + '\n';
+			// TODO: Передать через PIPE название файла
+			var res = textarea.value.replace(/\n/g, '|');
+			res = res.replace(/(\s+)?.$/, '');
+			func_reg.Write(res , 'Protectedregistry');
+			func_pipe.Send("reg.update");
+		});
+		buttonClear.addEventListener("click", function() {
+			console.log("Clear list");
+			textarea.value = "";
+			var notification = new Notification('UnterAV' , {body:"Список очищен !"});
+			// TODO: Передать через PIPE
+			func_reg.Write('', 'Protectedregistry');
+			func_pipe.Send("reg.update");
+		});
+
+		$('#CheckboxToggle').change(function () {
+			if ( $(this).is(':checked') ) {
+				func_pipe.Send("reg.on");
+				var notification = new Notification('UnterAV' , {body:"Подсистема включена !"});
+				initpage.WriteSettings('RegFilter' , 'On');
+			} else {
+				func_pipe.Send("reg.off");
+				var notification = new Notification('UnterAV' , {body:"Подсистема выключена !"});
+				initpage.WriteSettings('RegFilter' , 'Off');
+			}
+		});
+
+	</script>
+  </body>
+</html>

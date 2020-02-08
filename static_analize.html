@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Static Analize</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/bg.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<script>
+		window.$ = window.jQuery = require('jquery');
+		require('popper.js');
+		require('bootstrap');
+	</script>
+	<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/css/bootstrap4-toggle.min.css" rel="stylesheet">  
+	<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/js/bootstrap4-toggle.min.js"></script>	
+</head>
+<body class="bg-dark">
+    <div class="d-flex" id="wrapper">
+      	<!-- Sidebar -->
+		  <div class="border-right border-secondary" id="sidebar-wrapper">
+			<div class="sidebar-heading"><a href="index.html" class="list-group-item list-group-item-action">UnterAV</a></div>
+			<div class="list-group list-group-flush mr-1">
+				<a href="file_filter_system.html" class="list-group-item list-group-item-action linkshadow">Подсистема файловой фильтрации</a>
+				<a href="reg_filter_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема реестровой фильтрации</a>
+				<a href="static_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема статического анализа</a>
+				<a href="dynamic_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+					динамического анализа</a>
+				<a href="network_protection.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема сетевой защиты </a>
+				<a href="cloud_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистемы обновления и облачного сканирования</a>
+			</div>
+		</div>
+      	<!-- /#sidebar-wrapper -->
+
+		<!-- Page Content -->
+		<div  class="container justify-content-center" style="width: 100%;">
+			<div class="row">
+				<nav class="navbar navbar-expand-lg navbar-dark  bg-dark">
+					<button class="button button-effect" id="menu-toggle">Опции</button>
+				</nav>
+			</div>
+			<div class="m-2 p-2" style="background-color: darkgrey; border-radius:10px !important;">
+				<div class="row bg-secondary">
+					<!-- Формы ввода -->
+					<div class="col-xs-2 m-1 p-1">
+						<input id="Toggle1" type="checkbox" data-toggle="toggle" checked data-style="slow">
+					</div>
+					<div class="col-xs-10 m-1 p-1 ">
+						<label class="control-label align-middle">Проверка файлов на совпадение с сигнатурами</label>
+					</div>
+				</div>
+				<div class="row bg-secondary">
+					<!-- Формы ввода -->
+					<div class="col-xs-2 m-1 p-1">
+						<input id="Toggle2" type="checkbox" data-toggle="toggle" checked data-style="slow">
+					</div>
+					<div class="col-xs-10 m-1 p-1 text-center">
+						<label class="control-label">Проверка файлов на YARA-правила</label>
+					</div>
+				</div>
+				<div class="row bg-secondary">
+					<!-- Формы ввода -->
+					<div class="col-xs-2 m-1 p-1">
+						<input id="Toggle3" type="checkbox" data-toggle="toggle" checked data-style="slow">
+					</div>
+					<div class="col-xs-10 m-1 p-1 text-center">
+						<label class="control-label">Определение упаковки файлов</label>
+					</div>
+				</div>
+				<div class="row bg-secondary">
+					<!-- Формы ввода -->
+					<div class="col-xs-2 m-1 p-1">
+						<input id="Toggle4" type="checkbox" data-toggle="toggle" checked data-style="slow">
+					</div>
+					<div class="col-xs-10 m-1 p-1 text-center">
+						<label class="control-label">Проверка подписи файлов</label>
+					</div>
+				</div>
+				<div class="bg-secondary p-2" style="border-radius:20px !important;">
+					<div style="background-color: darkgrey; border-radius:20px !important;">
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<input type="radio" name="Radios" id="ChooseFile">Выбрать файл</input>
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col m-1 p-1"  style="widows: 95% !important;">
+								<input type="file" class="custom-file-input" disabled id="customFile">
+								<label class="custom-file-label">C:\Program Files</label>
+							</div>
+						</div>
+					</div>
+					<div style="background-color: darkgrey; border-radius:20px !important;">
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<input type="radio" name="Radios" id="ChooseDirectory">Выбрать выбрать директорию</input>	
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col m-1 p-1" style="widows: 95% !important;" >
+								<input type="text" id="Directory" class="m-2 p-2 form-control" disabled placeholder="Название директории">
+							</div>
+						</div>
+					</div>
+					<div class="row justify-content-md-center">
+						<div class="col-md-auto m-1 p-1">
+							<button id="StartScan" type="submit" class="button button-effect">Сканировать</button>
+							<audio id="audio" src="./bip-bip.mp3" autostart="false" ></audio>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+      	<!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+	<script>
+	const func_notify = require('modules/../../notification.js');
+	const buttonStart = document.querySelector("#StartScan");
+	const buttonToggle1 = document.querySelector("#Toggle1");
+	const buttonToggle2 = document.querySelector("#Toggle2");
+	const buttonToggle3 = document.querySelector("#Toggle3");
+	const buttonToggle4 = document.querySelector("#Toggle4");
+	
+	
+	var executablePath = "C:\\UnterAV\\Static_Analysis_Subsystem.exe";
+	var FilePathG = "" , ParamStr = ""; 
+
+	$("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+		
+	$(".custom-file-input").on("change", function() {
+		if (document.getElementById("customFile").files[0])
+		{
+			FilePathG = document.getElementById("customFile").files[0].path; //$(this).val();
+			var fileName = $(this).val().split("\\").pop();
+			$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+		}
+		else
+		{
+			FilePathG = '';
+			$(this).siblings(".custom-file-label").addClass("selected").html('Файл не выбран');
+		}
+
+	});
+
+	$('#ChooseFile').change(function() {
+		console.log('change file');
+		document.getElementById("Directory").disabled = true;
+		document.getElementById("customFile").disabled = false;
+	});
+
+	$('#ChooseDirectory').change(function() {
+		console.log('change dir');
+		document.getElementById("Directory").disabled = false;
+		document.getElementById("customFile").disabled = true;
+	});
+
+	// Обработка нажатия кнопки
+	buttonStart.addEventListener("click", function() {
+		if(document.getElementById("Directory").disabled == false)
+		{
+			// dir
+			ParamStr = document.getElementById("Directory").value;
+			console.log(ParamStr);
+			func_notify.isNull(ParamStr);
+		}
+		else if (document.getElementById("customFile").disabled == false)
+		{
+			// file
+			ParamStr = FilePathG;
+			console.log(ParamStr);
+			func_notify.isNull(ParamStr);	
+		}
+		else{
+			var notification = new Notification('UnterAV' , {body:"Выберете обьект для сканирования !"});
+			return;
+		}
+
+		// Сигнатурный анализ
+		if(buttonToggle1.checked)
+		{
+			var child = require('child_process').execFile;
+			console.log("Toggle1 is checked !");
+			child(executablePath , ['-s', ParamStr] , function(err, data) {
+            	console.log(err);
+            	console.log(data.toString());
+       		});
+		}
+		else
+			console.log("Toggle1 is not checked !");
+		// YARA-правила
+		if(buttonToggle2.checked)
+		{
+			var child = require('child_process').execFile;
+			console.log("Toggle2 is checked !");
+			var yara = ["-y" , ParamStr];
+			child(executablePath, yara, function(err, data) {
+				console.log(err)
+				console.log(data.toString());
+			});
+		}	
+		else
+			console.log("Toggle2 is not checked !");
+		// Проверка упаковки
+		if(buttonToggle3.checked)
+		{
+			const child = require('child_process').execFile;
+			console.log("Toggle3 is checked !");
+			var p = ["-p" , ParamStr];
+			child(executablePath, p, function(err, data) {
+				console.log(err)
+				console.log(data.toString());
+			});
+		}			
+		else
+			console.log("Toggle3 is not checked !");
+		// Проверка подписи
+		if(buttonToggle4.checked)
+		{
+			const child = require('child_process').execFile;
+			console.log("Toggle4 is checked !");
+			var v = ["-v" , ParamStr];
+			child(executablePath, v, function(err, data) {
+				console.log(err)
+				console.log(data.toString());
+			});
+		}
+		else
+			console.log("Toggle4 is not checked !");
+		
+		var sound = document.getElementById("audio");
+        sound.play();
+		
+	});
+	</script>
+  </body>
+</html>

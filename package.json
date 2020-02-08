@@ -1,0 +1,52 @@
+{
+  "name": "gui",
+  "version": "1.0.0",
+  "description": "UnterAV grafic interface ",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js",
+    "createexe": "electron-packager .",
+    "convert": "electron-packager . --all",
+    "rebuild": "electron-rebuild -f -w sqlite3",
+    "postinstall": "electron-builder install-app-deps",
+    "initdb": "electron database.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KanesRF/UnterAV.git"
+  },
+  "keywords": [
+    "AV"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KanesRF/UnterAV/issues"
+  },
+  "homepage": "https://github.com/KanesRF/UnterAV#readme",
+  "devDependencies": {
+    "electron": "^7.1.9",
+    "electron-builder": "^22.2.0",
+    "electron-packager": "^14.2.0",
+    "electron-winstaller": "^4.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "bootstrap4-toggle": "^3.6.1",
+    "decompress-zip": "^0.2.2",
+    "dnode": "^1.2.2",
+    "electron-rebuild": "^1.9.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "jquery": "^3.4.1",
+    "node-gyp": "^5.0.7",
+    "node-notifier": "^6.0.0",
+    "popper": "^1.0.1",
+    "popper.js": "^1.16.0",
+    "python-shell": "^1.0.8",
+    "regedit": "^3.0.3",
+    "sqlite3": "^4.1.1",
+    "unzip": "^0.1.11",
+    "unzipper": "^0.10.7"
+  }
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Static Analize</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/bg.css">
+    <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script>
+        window.$ = window.jQuery = require('jquery');
+        require('popper.js');
+        require('bootstrap');
+    </script>
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/css/bootstrap4-toggle.min.css"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.0/js/bootstrap4-toggle.min.js"></script>
+</head>
+
+<body class="bg-dark">
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="border-right border-secondary" id="sidebar-wrapper">
+            <div class="sidebar-heading"><a href="index.html" class="list-group-item list-group-item-action">UnterAV</a>
+            </div>
+            <div class="list-group list-group-flush mr-1">
+                <a href="file_filter_system.html" class="list-group-item list-group-item-action linkshadow">Подсистема
+                    файловой фильтрации</a>
+                <a href="reg_filter_system.html"
+                    class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема реестровой фильтрации</a>
+                <a href="static_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+                    статического анализа</a>
+                <a href="dynamic_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+                        динамического анализа</a>
+                <a href="network_protection.html"
+                    class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема сетевой защиты </a>
+                <a href="cloud_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистемы
+                    обновления и облачного сканирования</a>
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div class="container justify-content-center" style="width: 100%;">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg navbar-dark  bg-dark">
+                    <button class="button button-effect" id="menu-toggle">Опции</button>
+                </nav>
+            </div>
+            <div class="m-2 p-2" style="background-color: darkgrey; border-radius:10px !important;">
+                <div style="background-color: darkgrey; border-radius:20px !important;">
+                    <div class="row justify-content-md-center">
+                        <div class="col m-1 p-1" style="width: 95% !important;">
+                            <input type="file" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label">C:\Program Files</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="col-md-auto m-1 p-1">
+                        <button id="StartScan" type="submit" class="button button-effect">Сканировать</button>
+                        <audio id="audio" src="./bip-bip.mp3" autostart="false"></audio>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    <script>
+        const func_notify = require('modules/../../notification.js');
+        const buttonStart = document.querySelector("#StartScan");
+
+        var executablePath = "C:\\UnterAV\\drltrace-master\\build\\bin\\drltrace.exe";
+        var FilePathG = "";
+
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+
+        $(".custom-file-input").on("change", function () {
+            if (document.getElementById("customFile").files[0]) {
+                FilePathG = document.getElementById("customFile").files[0].path; //$(this).val();
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            }
+            else {
+                FilePathG = '';
+                $(this).siblings(".custom-file-label").addClass("selected").html('Файл не выбран');
+            }
+
+        });
+
+        
+        // Обработка нажатия кнопки
+        buttonStart.addEventListener("click", function () {
+            if(!FilePathG) {
+                var notification = new Notification('UnterAV', { body: "Выберете обьект для сканирования !" });
+                return;
+            }
+
+            var child = require('child_process').execFile;
+            console.log("Start running!");
+            child(executablePath, ['--', FilePathG], function (err, data) {
+                    console.log(err);
+                    console.log(data.toString());
+                });
+            
+            var sound = document.getElementById("audio");
+            sound.play();
+
+        });
+    </script>
+</body>
+
+</html>

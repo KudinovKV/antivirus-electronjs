@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Cloud System</title>
+		<!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+		<!-- meta http-equiv="Content-Security-Policy" content="script-src 'self';" /-->
+		<link rel="stylesheet" href="css/index.css">
+		<link rel="stylesheet" href="css/bg.css">
+		<link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	</head>
+	<body class="bg-dark">
+		<div class="d-flex" id="wrapper">
+			<!-- Sidebar -->
+			<div class="border-right border-secondary" id="sidebar-wrapper">
+				<div class="sidebar-heading"><a href="index.html" class="list-group-item list-group-item-action">UnterAV</a></div>
+				<div class="list-group list-group-flush mr-1">
+					<a href="file_filter_system.html" class="list-group-item list-group-item-action linkshadow">Подсистема файловой фильтрации</a>
+					<a href="reg_filter_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема реестровой фильтрации</a>
+					<a href="static_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема статического анализа</a>
+					<a href="dynamic_analize.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема
+						динамического анализа</a>
+					<a href="network_protection.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистема сетевой защиты </a>
+					<a href="cloud_system.html" class="list-group-item list-group-item-action mt-1 linkshadow">Подсистемы обновления и облачного сканирования</a>
+				</div>
+			</div>
+			<!-- /#sidebar-wrapper -->
+
+			<!-- Page Content -->
+			<div class="container" style="width: 100%;">
+				<div class="row">
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+						<button class="button button-effect" id="menu-toggle">Опции</button>
+					</nav>
+				</div>
+				<div class="m-2 p-2" style="background-color: darkgrey; border-radius:10px !important;">
+					<!-- Формы ввода -->
+					<div class="bg-secondary m-2 p-2" style="border-radius: 10px !important;">
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<span>Запустить облачное сканирование</span>
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<input type="file" class="custom-file-input" id="customFile">
+								<label class="custom-file-label" for="customFile">C:\1.txt</label>	
+							</div>	
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<button type="submit" id="StartCloudScan" class="button button-effect">Старт</button>
+							</div>
+						</div>
+					</div>
+					<div class="bg-secondary m-2 p-2" style="border-radius: 10px !important;">
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<span>Время выполнения сканирования :</span>
+							</div>
+						</div>
+						<div class="row justify-content-md-center">
+							<div class="col-md-auto m-1 p-1">
+								<span id="my_timer" style="color: #08233a !important; font-size: 150%; font-weight: bold;">00:00:00</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /#page-content-wrapper -->
+
+		</div>
+		<!-- /#wrapper -->
+		<!-- Menu Toggle Script -->
+		<script>
+		window.$ = window.jQuery = require('jquery');
+		let {PythonShell} = require('python-shell');
+		const logs = require('modules/../../log.js');
+		const initpage = require('modules/../../initpage.js');
+
+		const StartCloudScan = document.querySelector("#StartCloudScan");
+		
+		let FileNameG = "";
+		let EndOfWork = false;
+	
+		$("#menu-toggle").click(function(e) {
+			e.preventDefault();
+			$("#wrapper").toggleClass("toggled");
+		});
+
+		// Add the following code if you want the name of the file appear on select
+		$(".custom-file-input").on("change", function()
+		{
+			FileNameG = document.getElementById("customFile").files[0].path;
+			var fileName = $(this).val().split("\\").pop();
+			$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+		});
+
+		
+		function StartTimer()
+		{
+			var my_timer = document.getElementById("my_timer");
+			var time = my_timer.innerHTML;
+			var arr = time.split(":");
+			var h = arr[0];
+			var m = arr[1];
+			var s = arr[2];
+			if(EndOfWork)
+			{
+				EndOfWork = false;
+				return;
+			}
+			if(s == 59)
+			{
+				s = 0;
+				m++;
+				if (m == 59)
+				{
+					m = 0;
+					h++;
+					if (h < 10) h = "0" + h;
+				}
+				if (m < 10) m = "0" + m;
+			}
+			else
+				s++;
+			if (s < 10) s = "0" + s;
+			document.getElementById("my_timer").innerHTML = h+":"+m+":"+s;
+			setTimeout(StartTimer, 1000);
+		}
+
+		StartCloudScan.addEventListener("click", function() {
+			document.getElementById("my_timer").innerHTML = "00:00:00";
+			var startevent = "Start scanning";
+			logs.LogWrite(startevent);
+			logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + startevent );
+			var notification = new Notification('UnterAV' , {body:startevent});
+			StartTimer();
+
+			const child = require('child_process').execFile;
+           
+            var p = ['C:/UnterAV/Cloud/cuckoo_start_scan.py', FileNameG , '192.168.119.140' , '8090'];
+            child('C:/Program Files/Python37-32/python3.exe', p, function(err, data) {
+                if  (err)
+				{
+					throw err;
+				}
+				var results = data.split(' ');
+				results[1] = results[1].replace('\n' , '');
+				console.log(results);
+
+				if (results[0].localeCompare("Error") == 0)
+				{
+					var eventtext = "Scan is end. Got some errors";
+					var notification = new Notification('UnterAV' , {body:eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + eventtext);
+				}
+				else if (results[0].localeCompare("Clear") == 0){
+					var eventtext = 'File was clear, score : ' + results[1];
+					var notification = new Notification('UnterAV' , {body: eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + eventtext);
+				}
+				else if (results[0].localeCompare("Malware") == 0){
+					var eventtext = 'File was malware , score : ' + results[1];
+					var notification = new Notification('UnterAV' , {body:eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' , '[' + FileNameG + ']' + eventtext);
+				}
+				else{
+					var eventtext = "Scan is end. Got some errors";
+					var notification = new Notification('UnterAV' , {body:eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' , '[' + FileNameG + ']' + eventtext);
+				}
+				EndOfWork = true;
+            });
+			/*PythonShell.run('C:\\UnterAV\\Cloud\\cuckoo_start_scan.py' , options ,  function  (err, results)  {
+				if  (err)
+					throw err;
+				console.log('results', results);
+				if (results == 'Error')
+				{
+					var eventtext = "Сканирование завершено. При выполнении возникли ошибки";
+					var notification = new Notification('UnterAV' , {body:eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + eventtext);
+				}
+				else if (results[1] == 'Clear'){
+					var eventtext = `Проверка показала, что файл безопасен, рейтинг : ${results[0]} ! `;
+					var notification = new Notification('UnterAV' , {body: eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' ,  '[' + FileNameG + ']' + eventtext);
+				}
+				else if (results[1] == 'Malware'){
+					var eventtext = `Проверка показала, что файл выполняет подозрительную активность, рейтинг : ${results[0]} ! `;
+					var notification = new Notification('UnterAV' , {body:eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' , '[' + FileNameG + ']' + eventtext);
+				}
+				else{
+					var eventtext = "Сканирование завершено. При выполнении возникли ошибки";
+					var notification = new Notification('UnterAV' , {body:eventtext});
+					logs.LogWrite(eventtext);
+					logs.LogWriteDb('CLOUDSYSTEM' , '[' + FileNameG + ']' + eventtext);
+				}
+				EndOfWork = true;			
+			});*/
+		});
+
+		</script>
+	</body>
+</html>
