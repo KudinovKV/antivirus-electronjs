@@ -1,7 +1,5 @@
 const net = require('net');
 const notification = require('node-notifier');
-const initpage = require('modules/../../initpage.js');
-const func_notify = require('modules/../../notification.js');
 const logs = require('modules/../../log.js');
 
 var L = console.log;
