@@ -15,4 +15,4 @@
 
 # Result
 
-[example.png](example.png)
+![Start page](example.png)
